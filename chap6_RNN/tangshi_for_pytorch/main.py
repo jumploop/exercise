@@ -35,18 +35,17 @@ def process_poems1(file_name):
                 poems.append(content)
             except ValueError as e:
                 print("error")
-                pass
     # 按诗的字数排序
     poems = sorted(poems, key=lambda line: len(line))
     # print(poems)
     # 统计每个字出现次数
     all_words = []
     for poem in poems:
-        all_words += [word for word in poem]
+        all_words += list(poem)
     counter = collections.Counter(all_words)  # 统计词和词频。
     count_pairs = sorted(counter.items(), key=lambda x: -x[1])  # 排序
     words, _ = zip(*count_pairs)
-    words = words[:len(words)] + (' ',)
+    words = words[:] + (' ',)
     word_int_map = dict(zip(words, range(len(words))))
     poems_vector = [list(map(word_int_map.get, poem)) for poem in poems]
     return poems_vector, word_int_map, words
@@ -63,8 +62,7 @@ def process_poems2(file_name):
         # content = ''
         for line in f.readlines():
             try:
-                line = line.strip()
-                if line:
+                if line := line.strip():
                     content = line.replace(' '' ', '').replace('，','').replace('。','')
                     if '_' in content or '(' in content or '（' in content or '《' in content or '[' in content or \
                                     start_token in content or end_token in content:
@@ -74,7 +72,6 @@ def process_poems2(file_name):
                     # print(content)
                     content = start_token + content + end_token
                     poems.append(content)
-                    # content = ''
             except ValueError as e:
                 # print("error")
                 pass
@@ -84,11 +81,11 @@ def process_poems2(file_name):
     # 统计每个字出现次数
     all_words = []
     for poem in poems:
-        all_words += [word for word in poem]
+        all_words += list(poem)
     counter = collections.Counter(all_words)  # 统计词和词频。
     count_pairs = sorted(counter.items(), key=lambda x: -x[1])  # 排序
     words, _ = zip(*count_pairs)
-    words = words[:len(words)] + (' ',)
+    words = words[:] + (' ',)
     word_int_map = dict(zip(words, range(len(words))))
     poems_vector = [list(map(word_int_map.get, poem)) for poem in poems]
     return poems_vector, word_int_map, words
@@ -182,13 +179,13 @@ def to_word(predict, vocabs):  # 预测的结果转化成汉字
 def pretty_print_poem(poem):  # 令打印的结果更工整
     shige=[]
     for w in poem:
-        if w == start_token or w == end_token:
+        if w in [start_token, end_token]:
             break
         shige.append(w)
     poem_sentences = poem.split('。')
     for s in poem_sentences:
         if s != '' and len(s) > 10:
-            print(s + '。')
+            print(f'{s}。')
 
 
 def gen_poem(begin_word):

@@ -308,7 +308,7 @@ for game in ['air_raid', 'alien', 'amidar', 'assault', 'asterix', 'asteroids', '
         # space_invaders should yield SpaceInvaders-v0 and SpaceInvaders-ram-v0
         name = ''.join([g.capitalize() for g in game.split('_')])
         if obs_type == 'ram':
-            name = '{}-ram'.format(name)
+            name = f'{name}-ram'
 
         nondeterministic = False
         if game == 'elevator_action' and obs_type == 'ram':
@@ -319,61 +319,81 @@ for game in ['air_raid', 'alien', 'amidar', 'assault', 'asterix', 'asteroids', '
             nondeterministic = True
 
         register(
-            id='{}-v0'.format(name),
+            id=f'{name}-v0',
             entry_point='gym.envs.atari:AtariEnv',
-            kwargs={'game': game, 'obs_type': obs_type, 'repeat_action_probability': 0.25},
+            kwargs={
+                'game': game,
+                'obs_type': obs_type,
+                'repeat_action_probability': 0.25,
+            },
             max_episode_steps=10000,
             nondeterministic=nondeterministic,
         )
 
+
         register(
-            id='{}-v4'.format(name),
+            id=f'{name}-v4',
             entry_point='gym.envs.atari:AtariEnv',
             kwargs={'game': game, 'obs_type': obs_type},
             max_episode_steps=100000,
             nondeterministic=nondeterministic,
         )
 
-        # Standard Deterministic (as in the original DeepMind paper)
-        if game == 'space_invaders':
-            frameskip = 3
-        else:
-            frameskip = 4
 
+        # Standard Deterministic (as in the original DeepMind paper)
+        frameskip = 3 if game == 'space_invaders' else 4
         # Use a deterministic frame skip.
         register(
-            id='{}Deterministic-v0'.format(name),
+            id=f'{name}Deterministic-v0',
             entry_point='gym.envs.atari:AtariEnv',
-            kwargs={'game': game, 'obs_type': obs_type, 'frameskip': frameskip, 'repeat_action_probability': 0.25},
+            kwargs={
+                'game': game,
+                'obs_type': obs_type,
+                'frameskip': frameskip,
+                'repeat_action_probability': 0.25,
+            },
             max_episode_steps=100000,
             nondeterministic=nondeterministic,
         )
 
+
         register(
-            id='{}Deterministic-v4'.format(name),
+            id=f'{name}Deterministic-v4',
             entry_point='gym.envs.atari:AtariEnv',
-            kwargs={'game': game, 'obs_type': obs_type, 'frameskip': frameskip},
+            kwargs={
+                'game': game,
+                'obs_type': obs_type,
+                'frameskip': frameskip,
+            },
             max_episode_steps=100000,
             nondeterministic=nondeterministic,
         )
 
+
         register(
-            id='{}NoFrameskip-v0'.format(name),
+            id=f'{name}NoFrameskip-v0',
             entry_point='gym.envs.atari:AtariEnv',
-            kwargs={'game': game, 'obs_type': obs_type, 'frameskip': 1, 'repeat_action_probability': 0.25}, # A frameskip of 1 means we get every frame
+            kwargs={
+                'game': game,
+                'obs_type': obs_type,
+                'frameskip': 1,
+                'repeat_action_probability': 0.25,
+            },
             max_episode_steps=frameskip * 100000,
             nondeterministic=nondeterministic,
         )
+
 
         # No frameskip. (Atari has no entropy source, so these are
         # deterministic environments.)
         register(
-            id='{}NoFrameskip-v4'.format(name),
+            id=f'{name}NoFrameskip-v4',
             entry_point='gym.envs.atari:AtariEnv',
-            kwargs={'game': game, 'obs_type': obs_type, 'frameskip': 1}, # A frameskip of 1 means we get every frame
+            kwargs={'game': game, 'obs_type': obs_type, 'frameskip': 1},
             max_episode_steps=frameskip * 100000,
             nondeterministic=nondeterministic,
         )
+
 
 # Board games
 # ----------------------------------------
@@ -475,20 +495,16 @@ register(
     max_episode_steps=200,
 )
 
-# semi_supervised envs
-    # probably the easiest:
 register(
     id='SemisuperPendulumNoise-v0',
     entry_point='gym.envs.safety:SemisuperPendulumNoiseEnv',
     max_episode_steps=200,
 )
-    # somewhat harder because of higher variance:
 register(
     id='SemisuperPendulumRandom-v0',
     entry_point='gym.envs.safety:SemisuperPendulumRandomEnv',
     max_episode_steps=200,
 )
-    # probably the hardest because you only get a constant number of rewards in total:
 register(
     id='SemisuperPendulumDecay-v0',
     entry_point='gym.envs.safety:SemisuperPendulumDecayEnv',
