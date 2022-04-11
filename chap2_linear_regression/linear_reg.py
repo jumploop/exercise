@@ -10,16 +10,14 @@ def load_data(filename):
     """载入数据。"""
     xys = []
     with open(filename, 'r') as f:
-        for line in f:
-            xys.append(map(float, line.strip().split()))
+        xys.extend(map(float, line.strip().split()) for line in f)
         xs, ys = zip(*xys)
         return np.asarray(xs), np.asarray(ys)
 
 
 def evaluate(ys, ys_pred):
     """评估模型。"""
-    std = np.sqrt(np.mean(np.abs(ys - ys_pred) ** 2))
-    return std
+    return np.sqrt(np.mean(np.abs(ys - ys_pred) ** 2))
 
 
 def main(x_train, y_train):

@@ -12,7 +12,7 @@ agent.load_model()
 
 max_epochs = 100
 
-for i_episode in range(max_epochs):
+for _ in range(max_epochs):
     observation = env.reset()
     # observation  是 3 x 8 x 8 的 list,表示当前的棋局，具体定义在 reversi.py 中的 state
     for t in range(100):
@@ -34,17 +34,19 @@ for i_episode in range(max_epochs):
         env.render()
         enables = env.possible_actions
         # if nothing to do ,select pass
-        if len(enables) == 0:
-            action_ = env.board_size ** 2 + 1 # pass
-        else:
-           action_  = agent.place(observation, enables) # 调用自己训练的模型
+        action_ = (
+            env.board_size ** 2 + 1
+            if len(enables) == 0
+            else agent.place(observation, enables)
+        )
+
         action[0] = action_
         action[1] = 1  # 白棋 为 1
         observation, reward, done, info = env.step(action)
 
 
         if done: # 游戏 结束
-            print("Episode finished after {} timesteps".format(t+1))
+            print(f"Episode finished after {t + 1} timesteps")
             black_score = len(np.where(env.state[0,:,:]==1)[0])
             if black_score >32:
                 print("黑棋赢了！")

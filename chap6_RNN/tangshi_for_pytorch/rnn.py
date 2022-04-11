@@ -28,8 +28,7 @@ class word_embedding(nn.Module):
         :param input_sentence:  a tensor ,contain several word index.
         :return: a tensor ,contain word embedding tensor
         """
-        sen_embed = self.word_embedding(input_sentence)
-        return sen_embed
+        return self.word_embedding(input_sentence)
 
 
 class RNN_model(nn.Module):
